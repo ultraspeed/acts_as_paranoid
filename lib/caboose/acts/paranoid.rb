@@ -169,7 +169,7 @@ module Caboose #:nodoc:
 
         def destroy_without_callbacks
           unless new_record?
-            self.class.update_all self.class.send(:sanitize_sql, ["#{self.class.deleted_attribute} = ?", (self.deleted_at = self.class.send(:current_time))]), ["#{self.class.primary_key} = ?", id]
+            self.class.update_all self.class.send(:sanitize_sql, ["#{self.class.deleted_attribute} = ?", (self.class.deleted_attribute = self.class.send(:current_time))]), ["#{self.class.primary_key} = ?", id]
           end
           freeze
         end
@@ -186,11 +186,11 @@ module Caboose #:nodoc:
         end
 
         def deleted?
-          !!read_attribute(:deleted_at)
+          !!read_attribute(self.class.deleted_attribute.to_sym)
         end
 
         def recover!
-          self.deleted_at = nil
+          self.class.deleted_attribute = nil
           save!
         end
         
